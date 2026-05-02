@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}SmartTalk AI Chat{% endblock %}
+
+{% block content %}
+<div class="navbar">
+    <div class="logo">
+        <i class="fas fa-robot"></i> SmartTalk AI
+    </div>
+    <div class="user-info">
+        <span><i class="fas fa-comments"></i> Live Chat</span>
+        <a href="/dashboard" style="color:#00d4ff;"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="glass chat-container">
+        <div id="chatBox" class="chat-box">
+            <div class="message bot">
+                <div class="msg-bubble">
+                    <i class="fas fa-robot"></i> Hello! Main hu tumhara coding assistant. 
+                    Python, Flask, Algorithms ke baare mein puchho!
+                    <br><br>
+                    <small style="opacity:0.6;">Try: "python string", "flask route", "binary search"</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-box">
+            <input id="msgInput" placeholder="Ask anything about coding..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="btn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i> Send
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let isTyping = false;
+
+function sendMessage() {
+    const input = document.getElementById('msgInput');
+    const chatBox = document.getElementById('chatBox');
+    const message = input.value.trim();
+    
+    if (!message || isTyping) return;
+    
+    // User message
+    chatBox.innerHTML += `
+        <div class="message user">
+            <div class="msg-bubble">${message}</div>
+        </div>
+    `;
+    
+    input.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    // Show typing indicator
+    if (!isTyping) {
+        isTyping = true;
+        chatBox.innerHTML += `
+            <div class="message bot typing">
+                <div class="msg-bubble">
+                    <div class="typing">
+                        <span></span><span></span><span></span>
+                        AI is typing...
+                    </div>
+                </div>
+            </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    
+    // Send to server
+    fetch('/ask', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: message})
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Remove typing indicator
+        const typingMsg = chatBox.querySelector('.typing');
+        if (typingMsg) typingMsg.remove();
+        
+        // Add bot response with typing effect
+        const botMsg = document.createElement('div');
+        botMsg.className = 'message bot';
+        botMsg.innerHTML = `
+            <div class="msg-bubble">
+                <strong>${data.title}</strong><br><br>
+                <div id="temp-desc">${data.desc}</div>
+                ${data.code ? `<pre><code class="language-python">${data.code}</code></pre>` : ''}
+            </div>
+        `;
+        
+        chatBox.appendChild(botMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        // Typing effect
+        typeMessage(document.getElementById('temp-desc'), data.desc);
+        Prism.highlightAllUnder(botMsg);
+        
+        isTyping = false;
+    })
+    .catch(error => {
+        const typingMsg = chatBox.querySelector('.typing');
+        if (typingMsg) typingMsg.remove();
+        
+        chatBox.innerHTML += `
+            <div class="message bot">
+                <div class="msg-bubble" style="background:rgba(255,100,100,0.2);">
+                    <i class="fas fa-exclamation-triangle"></i> Error! Try again.
+                </div>
+            </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        isTyping = false;
+    });
+}
+</script>
+{% endblock %}

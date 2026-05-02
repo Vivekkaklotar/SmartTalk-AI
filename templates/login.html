@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}SmartTalk - Login{% endblock %}
+
+{% block content %}
+<div class="navbar">
+    <div class="logo">SmartTalk AI</div>
+</div>
+
+<div class="main-container">
+    <div class="login-container">
+        
+        <!-- LEFT -->
+        <div class="login-left">
+            <div class="hero-content">
+                <h1 class="hero-title">AI Coding Assistant</h1>
+                <p class="hero-subtitle">Master coding instantly</p>
+            </div>
+        </div>
+        
+        <!-- RIGHT -->
+        <div class="login-right">
+            <h2>Welcome Back</h2>
+            <p style="opacity:0.8;margin-bottom:35px;">Sign in to your workspace</p>
+            
+            <form method="POST" action="/login">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input name="password" type="password" required>
+                </div>
+
+                <button type="submit" class="btn" style="width:100%;">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

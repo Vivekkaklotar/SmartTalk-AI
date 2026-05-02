@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}SmartTalk Dashboard{% endblock %}
+
+{% block content %}
+<div class="navbar">
+    <div class="logo">
+        <i class="fas fa-robot"></i> SmartTalk AI
+    </div>
+    <div class="user-info">
+        <span><i class="fas fa-user"></i> {{ user.username }}</span>
+        <span class="{% if user.role == 'owner' %}text-warning{% else %}text-info{% endif %}">
+            <i class="fas fa-crown"></i> {{ user.role.title() }}
+        </span>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="glass" style="width:800px;">
+        <div style="text-align:center;margin-bottom:40px;">
+            <h1 style="font-size:36px;margin-bottom:10px;">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </h1>
+            <p style="opacity:0.8;font-size:18px;">Welcome back {{ user.username }}!</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <a href="/chat" class="card">
+                <div class="card-icon">
+                    <i class="fas fa-comments" style="color:#00d4ff;"></i>
+                </div>
+                <h3>AI Assistant</h3>
+                <p>Ask coding questions, get instant answers with code examples</p>
+            </a>
+            
+            {% if user.role == 'owner' %}
+            <a href="/owner" class="card">
+                <div class="card-icon">
+                    <i class="fas fa-crown" style="color:gold;"></i>
+                </div>
+                <h3>Owner Panel</h3>
+                <p>Manage users, view analytics & system settings</p>
+            </a>
+            {% endif %}
+            
+            <a href="/logout" class="card" style="background:rgba(255,100,100,0.1);border-color:rgba(255,100,100,0.3);">
+                <div class="card-icon">
+                    <i class="fas fa-sign-out-alt" style="color:#ff6666;"></i>
+                </div>
+                <h3>Logout</h3>
+                <p>Securely sign out of your account</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
